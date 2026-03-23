@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="header">NEU Library Admin Dashboard</div>
+
+<h2>Dashboard</h2>
+
+<div class="stats">
+  <div class="stat-box" id="todayCount"></div>
+  <div class="stat-box" id="weekCount"></div>
+  <div class="stat-box" id="monthCount"></div>
+</div>
+
+<div class="card controls">
+  <input type="text" id="search" placeholder="Search...">
+
+  <div class="controls-buttons">
+    <button id="searchBtn">Search</button>
+    <button id="pdfBtn">Export to PDF</button>
+  </div>
+</div>
+
+<table id="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Program</th>
+      <th>Email</th>
+      <th>Reason</th>
+      <th>Time</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "neu-library-system-7ff45.firebaseapp.com",
+  projectId: "neu-library-system-7ff45",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.getElementById("searchBtn").addEventListener("click", loadData);
+document.getElementById("pdfBtn").addEventListener("click", exportPDF);
+
+async function loadData() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const tableBody = document.querySelector("#table tbody");
+  tableBody.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "visitors"));
+
+  let today = 0, week = 0, month = 0;
+  const now = new Date();
+
+  querySnapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    const visitDate = data.time?.toDate();
+    if (!visitDate) return;
+
+    const combined = (data.name + data.program + data.email + data.reason).toLowerCase();
+    const diffDays = (now - visitDate) / (1000 * 60 * 60 * 24);
+
+    if (diffDays < 1) today++;
+    if (diffDays < 7) week++;
+    if (diffDays < 30) month++;
+
+    if (combined.includes(search)) {
+      const row = `
+        <tr>
+          <td>${data.name}</td>
+          <td>${data.program}</td>
+          <td>${data.email}</td>
+          <td>${data.reason}</td>
+          <td>${visitDate.toLocaleString()}</td>
+          <td>
+            <button onclick="toggleBlock('${docSnap.id}', ${data.blocked})">
+              ${data.blocked ? 'Unblock' : 'Block'}
+            </button>
+          </td>
+        </tr>
+      `;
+      tableBody.innerHTML += row;
+    }
+  });
+
+  document.getElementById("todayCount").innerText = "Today: " + today;
+  document.getElementById("weekCount").innerText = "This Week: " + week;
+  document.getElementById("monthCount").innerText = "This Month: " + month;
+}
+
+async function toggleBlock(id, blocked) {
+  await updateDoc(doc(db, "visitors", id), { blocked: !blocked });
+  loadData();
+}
+
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.text("NEU Library Visitors", 14, 20);
+
+  let y = 30;
+  const width = 40;
+
+  document.querySelectorAll("#table tbody tr").forEach(tr => {
+    const cells = tr.querySelectorAll("td:not(:last-child)");
+    cells.forEach((td, i) => {
+      const text = doc.splitTextToSize(td.innerText, width);
+      doc.text(text, 14 + i * width, y);
+    });
+    y += 10;
+  });
+
+  doc.save("NEU_Library.pdf");
+}
+
+loadData();
+</script>
+
+</body>
+</html>

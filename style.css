@@ -1,0 +1,122 @@
+:root {
+    --primary-blue: #1a73e8;
+    --dark-blue: #0d47a1;
+    --light-blue: #e3f2fd;
+    --accent-gold: #fbbc04;
+    --inc-green: #2e7d32;
+    --inc-red: #c62828;
+    --white: #ffffff;
+    --text-dark: #333;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, var(--light-blue), var(--white));
+    margin: 0;
+}
+
+.header {
+    background: var(--primary-blue);
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-weight: bold;
+}
+
+h2 {
+    text-align: center;
+    color: var(--dark-blue);
+}
+
+.card {
+    background: white;
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--dark-blue);
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.stat-box {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 6px solid var(--primary-blue);
+    font-weight: bold;
+}
+
+#todayCount { border-left-color: var(--inc-green); }
+#weekCount { border-left-color: #e0e0e0; }
+#monthCount { border-left-color: var(--inc-red); }
+
+.controls-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+th {
+    background: var(--primary-blue);
+    color: white;
+}
+
+td, th {
+    padding: 10px;
+}
+
+tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+tr:hover {
+    background: var(--light-blue);
+}
+
+#message {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 15px;
+    background: var(--light-blue);
+    color: var(--dark-blue);
+    font-weight: bold;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
